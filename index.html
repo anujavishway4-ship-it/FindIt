@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FindIt — Smart Lost & Found</title>
+
+<style>
+:root {
+    --bg: #100d1c;
+    --panel: #1c162d;
+    --panel2: #251d3a;
+    --border: #3b2d55;
+    --purple: #a982f5;
+    --purple2: #8258d8;
+    --mint: #63e3c0;
+    --blue: #79c9f5;
+    --text: #f7f3ff;
+    --muted: #b5aacb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(ellipse at top left, #4a2c69, #191329 40%, var(--bg) 80%);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+button, input, select, textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app {
+    display: grid;
+    grid-template-columns: 225px minmax(0, 1fr);
+    max-width: 1600px;
+    min-height: 100vh;
+    margin: auto;
+    background: rgba(19, 14, 31, 0.97);
+    border: 1px solid #443253;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    padding: 28px 17px;
+    background: #171124;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 8px;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: var(--purple);
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--purple), #6c49bc);
+    border-radius: 13px;
+    color: #171124;
+    font-size: 24px;
+}
+
+.side-label {
+    padding: 0 12px;
+    margin-bottom: -16px;
+    color: #8f82a8;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.side-nav {
+    display: grid;
+    gap: 8px;
+}
+
+.side-nav a,
+.side-nav button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 11px;
+    background: transparent;
+    color: var(--muted);
+    text-decoration: none;
+    text-align: left;
+    font-weight: 600;
+}
+
+.side-nav a:hover,
+.side-nav button:hover,
+.side-nav .active {
+    background: #3b2b58;
+    color: white;
+}
+
+.side-nav .active {
+    box-shadow: inset 3px 0 var(--purple);
+}
+
+.side-icon {
+    width: 22px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding: 16px;
+    background: linear-gradient(135deg, #29203f, #1d1730);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.sidebar-bottom strong {
+    display: block;
+    color: white;
+    font-size: 13px;
+}
+
+/* MAIN DASHBOARD */
+
+.main {
+    min-width: 0;
+    padding: 28px clamp(16px, 3vw, 40px);
+}
+
+.topline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 28px;
+}
+
+.breadcrumb {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-mini {
+    padding: 10px 13px;
+    background: #211a32;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    background: #3d2c59;
+    border-radius: 50%;
+    color: var(--purple);
+    font-weight: 800;
+}
+
+.welcome-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.welcome-row h1 {
+    margin: 0 0 8px;
+    font-size: clamp(27px, 3vw, 36px);
+    letter-spacing: -1px;
+}
+
+.welcome-row p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.welcome-row p span {
+    color: var(--mint);
+}
+
+/* BUTTONS */
+
+.btn {
+    padding: 11px 15px;
+    border: 0;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--purple), #8a64df);
+    color: #180f28;
+    box-shadow: 0 7px 22px #8c61d82b;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #2b2140;
+    border: 1px solid var(--border);
+    color: #f4edff;
+}
+
+.btn-small {
+    padding: 8px 11px;
+    font-size: 12px;
+}
+
+/* STATISTICS */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.stat {
+    position: relative;
+    overflow: hidden;
+    padding: 21px;
+    background: linear-gradient(145deg, #251c3a, #1d172e);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+}
+
+.stat::after {
+    content: "";
+    position: absolute;
+    top: -35px;
+    right: -25px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #9b75e617;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stat-value {
+    margin: 12px 0 5px;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.stat-foot {
+    color: var(--mint);
+    font-size: 11px;
+}
+
+.stat-icon {
+    float: right;
+    padding: 8px;
+    background: #382953;
+    border-radius: 10px;
+    font-size: 22px;
+}
+
+/* DASHBOARD CONTENT */
+
+.content-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.85fr);
+    gap: 17px;
+}
+
+.panel {
+    min-width: 0;
+    padding: 20px;
+    background: linear-gradient(150deg, #211a34, #1b152a);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+}
+
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.panel-heading h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.panel-heading p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.mini-link {
+    padding: 5px;
+    background: transparent;
+    border: 0;
+    color: var(--purple);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* RECENT REPORTS */
+
+.activity-list {
+    display: grid;
+    gap: 11px;
+}
+
+.activity {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #251d39;
+    border: 1px solid #352747;
+    border-radius: 13px;
+}
+
+.activity-emoji {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    background: #35284c;
+    border-radius: 12px;
+    font-size: 22px;
+}
+
+.activity strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.activity small {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.pill {
+    padding: 7px 9px;
+    border-radius: 30px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.pill-lost {
+    background: #50351f;
+    color: #ffc07a;
+}
+
+.pill-found {
+    background: #153d37;
+    color: #7df0cb;
+}
+
+/* SMART MATCH */
+
+.right-stack {
+    display: grid;
+    align-content: start;
+    gap: 17px;
+}
+
+.match-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 21px;
+    background: linear-gradient(135deg, #47306b, #2c2048 68%, #211a34);
+    border: 1px solid #63468a;
+    border-radius: 18px;
+}
+
+.match-hero::after {
+    content: "✦";
+    position: absolute;
+    top: 0;
+    right: 15px;
+    color: #c1a1ff20;
+    font-size: 80px;
+}
+
+.match-hero .tag {
+    color: var(--mint);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.match-hero h2 {
+    max-width: 260px;
+    margin: 12px 0 8px;
+    font-size: 22px;
+}
+
+.match-hero p {
+    max-width: 320px;
+    margin: 0 0 17px;
+    color: #d1c4e4;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.match-results {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.match-card {
+    padding: 13px;
+    background: #211932;
+    border: 1px solid #443259;
+    border-radius: 12px;
+}
+
+.match-card strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.match-card small {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.score {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 5px 8px;
+    background: #153d37;
+    border-radius: 20px;
+    color: var(--mint);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+/* SEARCH AND ITEM CARDS */
+
+.searchbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 155px 165px;
+    gap: 9px;
+    margin-bottom: 16px;
+}
+
+.searchbar input,
+.searchbar select,
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    padding: 12px;
+    background: #151020;
+    border: 1px solid #40314f;
+    border-radius: 10px;
+    color: var(--text);
+    outline: none;
+}
+
+.searchbar input::placeholder,
+.field input::placeholder,
+.field textarea::placeholder {
+    color: #817491;
+}
+
+.searchbar input:focus,
+.field input:focus,
+.field textarea:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px #a982f51c;
+}
+
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.item-card {
+    min-width: 0;
+    padding: 15px;
+    background: #251d39;
+    border: 1px solid #3a2c4e;
+    border-radius: 14px;
+    transition: 0.2s;
+}
+
+.item-card:hover {
+    transform: translateY(-3px);
+    border-color: #8260b6;
+    box-shadow: 0 10px 28px #08040e40;
+}
+
+.item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 7px;
+}
+
+.item-emoji {
+    width: 45px;
+    height: 45px;
+    display: grid;
+    place-items: center;
+    background: #38284e;
+    border-radius: 12px;
+    font-size: 24px;
+}
+
+.item-card h3 {
+    margin: 14px 0 7px;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.item-card p {
+    min-height: 36px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.item-meta {
+    display: grid;
+    gap: 7px;
+    margin: 12px 0;
+    color: #c1b5d3;
+    font-size: 10px;
+}
+
+.item-card .btn {
+    width: 100%;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    padding: 26px;
+    border: 1px dashed #554168;
+    border-radius: 13px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.7;
+}
+
+.empty-state strong {
+    display: block;
+    margin-bottom: 5px;
+    color: white;
+}
+
+/* REPORT FORM */
+
+.form-section {
+    margin-top: 18px;
+}
+
+.form-panel {
+    padding: 23px;
+    background: #211a34;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+}
+
+.form-panel h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+}
+
+.form-intro {
+    margin-bottom: 20px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.field.full {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    color: #e7def5;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.field textarea {
+    min-height: 95px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 19px;
+}
+
+.notice {
+    margin-top: 14px;
+    padding: 12px;
+    background: #153d37;
+    border-radius: 10px;
+    color: #8cf0d0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.hidden {
+    display: none !important;
+}
+
+footer {
+    padding: 27px 10px 5px;
+    color: #9185a4;
+    font-size: 11px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+footer b {
+    color: var(--purple);
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 1050px) {
+    .app {
+        grid-template-columns: 190px minmax(0, 1fr);
+    }
+
+    .item-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .app {
+        display: block;
+    }
+
+    .sidebar {
+        padding: 13px 16px;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+        margin-bottom: 12px;
+    }
+
+    .side-label,
+    .sidebar-bottom {
+        display: none;
+    }
+
+    .side-nav {
+        display: flex;
+        overflow-x: auto;
+        gap: 5px;
+    }
+
+    .side-nav a,
+    .side-nav button {
+        width: auto;
+        white-space: nowrap;
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .main {
+        padding: 20px 15px;
+    }
+
+    .welcome-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .searchbar {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .searchbar input {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 460px) {
+    .item-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .field.full {
+        grid-column: auto;
+    }
+
+    .activity {
+        grid-template-columns: 38px minmax(0, 1fr);
+    }
+
+    .activity-emoji {
+        width: 38px;
+        height: 38px;
+    }
+
+    .activity .pill {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .stats {
+        gap: 7px;
+    }
+
+    .stat {
+        padding: 12px;
+    }
+
+    .stat-value {
+        font-size: 23px;
+    }
+
+    .stat-icon {
+        display: none;
+    }
+
+    .stat-label {
+        font-size: 10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">✦</div>
+        <div>Find<span>It.</span></div>
+    </div>
+
+    <div class="side-label">Workspace</div>
+
+    <nav class="side-nav">
+        <a href="#dashboard" class="active">
+            <span class="side-icon">▦</span> Dashboard
+        </a>
+
+        <a href="#items">
+            <span class="side-icon">📦</span> Browse Items
+        </a>
+
+        <button onclick="showForm('lost')">
+            <span class="side-icon">⌕</span> Report Lost
+        </button>
+
+        <button onclick="showForm('found')">
+            <span class="side-icon">✚</span> Report Found
+        </button>
+
+        <a href="#matches">
+            <span class="side-icon">✧</span> Smart Matches
+        </a>
+    </nav>
+
+    <div class="side-label">Your space</div>
+
+    <nav class="side-nav">
+        <a href="#recent">
+            <span class="side-icon">◷</span> Recent Reports
+        </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <strong>✦ Community first</strong>
+        Lost something? Found something?
+        Help your community reconnect with their belongings.
+    </div>
+
+</aside>
+
+<!-- MAIN CONTENT -->
+
+<main class="main" id="dashboard">
+
+    <div class="topline">
+        <div class="breadcrumb">
+            Workspace / <b>Dashboard</b>
+        </div>
+
+        <div class="top-actions">
+            <button class="search-mini"
+                onclick="document.getElementById('searchInput').focus(); document.getElementById('items').scrollIntoView({behavior:'smooth'});">
+                ⌕ Search items
+            </button>
+
+            <div class="avatar">F</div>
+        </div>
+    </div>
+
+    <!-- WELCOME -->
+
+    <section class="welcome-row">
+        <div>
+            <h1>Find what matters. ✨</h1>
+            <p>
+                Welcome to FindIt — your community's
+                <span>smart lost & found space.</span>
+            </p>
+        </div>
+
+        <button class="btn btn-primary"
+            onclick="showForm('lost')">
+            + Create a report
+        </button>
+    </section>
+
+    <!-- STATISTICS -->
+
+    <section class="stats">
+
+        <div class="stat">
+            <span class="stat-icon">📋</span>
+            <div class="stat-label">Total Reports</div>
+            <div class="stat-value" id="totalCount">0</div>
+            <div class="stat-foot">Community reports</div>
+        </div>
+
+        <div class="stat">
+            <span class="stat-icon">🔎</span>
+            <div class="stat-label">Items Lost</div>
+            <div class="stat-value" id="lostCount">0</div>
+            <div class="stat-foot">Waiting to be found</div>
+        </div>
+
+        <div class="stat">
+            <span class="stat-icon">💚</span>
+            <div class="stat-label">Items Found</div>
+            <div class="stat-value" id="foundCount">0</div>
+            <div class="stat-foot">Ready to reconnect</div>
+        </div>
+
+    </section>
+
+    <!-- DASHBOARD PANELS -->
+
+    <section class="content-grid" id="recent">
+
+        <div class="panel">
+
+            <div class="panel-heading">
+                <div>
+                    <h2>Recent activity</h2>
+                    <p>What's happening around your community</p>
+                </div>
+
+                <button class="mini-link"
+                    onclick="document.getElementById('items').scrollIntoView({behavior:'smooth'})">
+                    View all ↗
+                </button>
+            </div>
+
+            <div class="activity-list" id="activityList"></div>
+
+        </div>
+
+        <div class="right-stack">
+
+            <div class="match-hero" id="matches">
+
+                <div class="tag">✦ Smart Match Finder</div>
+
+                <h2>Lost something? Let's find your match.</h2>
+
+                <p>
+                    Compare lost and found reports by item details,
+                    category, and location to discover possible matches.
+                </p>
+
+                <button class="btn btn-primary" id="matchButton">
+                    Find potential matches →
+                </button>
+
+                <div class="match-results" id="matchResults"></div>
+
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Quick actions</h2>
+                        <p>Get started in seconds</p>
+                    </div>
+                </div>
+
+                <div style="display:grid;gap:10px;">
+                    <button class="btn btn-secondary"
+                        onclick="showForm('lost')">
+                        🔎 &nbsp; I lost something
+                    </button>
+
+                    <button class="btn btn-secondary"
+                        onclick="showForm('found')">
+                        💚 &nbsp; I found something
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ALL ITEMS -->
+
+    <section class="panel" id="items" style="margin-top:18px;">
+
+        <div class="panel-heading">
+            <div>
+                <h2>Explore reports</h2>
+                <p>Search lost and found items in your community</p>
+            </div>
+        </div>
+
+        <div class="searchbar">
+
+            <input type="search"
+                id="searchInput"
+                placeholder="⌕ Search by name, description or location...">
+
+            <select id="typeFilter">
+                <option value="all">All reports</option>
+                <option value="lost">Lost items</option>
+                <option value="found">Found items</option>
+            </select>
+
+            <select id="categoryFilter">
+                <option value="all">All categories</option>
+                <option>Electronics</option>
+                <option>Bags & Wallets</option>
+                <option>Keys</option>
+                <option>Books & Stationery</option>
+                <option>Clothing</option>
+                <option>Accessories</option>
+                <option>Other</option>
+            </select>
+
+        </div>
+
+        <div class="item-grid" id="itemGrid"></div>
+
+    </section>
+
+    <!-- REPORT FORM -->
+
+    <section class="form-section hidden" id="reportSection">
+
+        <form class="form-panel" id="reportForm">
+
+            <h2 id="formTitle">Report an item</h2>
+
+            <div class="form-intro">
+                Add the details below to help your community
+                identify the missing or found item.
+                Fields marked with * are required.
+            </div>
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label for="reportType">Report type *</label>
+
+                    <select id="reportType" required>
+                        <option value="lost">I lost an item</option>
+                        <option value="found">I found an item</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="itemName">Item name *</label>
+
+                    <input id="itemName"
+                        required
+                        maxlength="70"
+                        placeholder="e.g. Black wallet">
+                </div>
+
+                <div class="field">
+                    <label for="category">Category *</label>
+
+                    <select id="category" required>
+                        <option value="">Choose category</option>
+                        <option>Electronics</option>
+                        <option>Bags & Wallets</option>
+                        <option>Keys</option>
+                        <option>Books & Stationery</option>
+                        <option>Clothing</option>
+                        <option>Accessories</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="location">Location *</label>
+
+                    <input id="location"
+                        required
+                        maxlength="100"
+                        placeholder="e.g. College library">
+                </div>
+
+                <div class="field">
+                    <label for="reportDate">Date *</label>
+
+                    <input id="reportDate" type="date" required>
+                </div>
+
+                <div class="field">
+                    <label for="contact">Contact (optional)</label>
+
+                    <input id="contact"
+                        maxlength="100"
+                        placeholder="Optional contact detail">
+                </div>
+
+                <div class="field full">
+                    <label for="description">Description *</label>
+
+                    <textarea id="description"
+                        required
+                        maxlength="500"
+                        placeholder="Colour, brand, unique details..."></textarea>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">
+                    Submit report
+                </button>
+
+                <button class="btn btn-secondary"
+                    type="button"
+                    onclick="hideForm()">
+                    Cancel
+                </button>
+            </div>
+
+            <div class="notice hidden" id="formNotice" role="status"></div>
+
+        </form>
+
+    </section>
+
+    <footer>
+        Made for the community, with <b>FindIt</b> ✦<br>
+        Prototype built with HTML, CSS & JavaScript.
+        Reports are stored locally in this browser.
+    </footer>
+
+</main>
+</div>
+
+<script>
+/* SAMPLE DATA */
+
+const STORAGE_KEY = "findit_reports_v1";
+
+const sampleReports = [
+    {
+        id: 101,
+        type: "lost",
+        name: "Black Wallet",
+        category: "Bags & Wallets",
+        location: "Campus Library",
+        date: "2026-10-25",
+        description: "Small black leather wallet with a plain design.",
+        contact: ""
+    },
+    {
+        id: 102,
+        type: "found",
+        name: "Black Leather Wallet",
+        category: "Bags & Wallets",
+        location: "Campus Library",
+        date: "2026-10-25",
+        description: "Found a small black leather wallet near the reading area.",
+        contact: ""
+    },
+    {
+        id: 103,
+        type: "lost",
+        name: "Blue Water Bottle",
+        category: "Other",
+        location: "College Classroom",
+        date: "2026-10-24",
+        description: "Blue reusable water bottle with a silver cap.",
+        contact: ""
+    },
+    {
+        id: 104,
+        type: "found",
+        name: "Student Notebook",
+        category: "Books & Stationery",
+        location: "College Canteen",
+        date: "2026-10-23",
+        description: "A notebook with a dark blue cover.",
+        contact: ""
+    },
+    {
+        id: 105,
+        type: "lost",
+        name: "Wireless Earbuds",
+        category: "Electronics",
+        location: "College Canteen",
+        date: "2026-10-26",
+        description: "White wireless earbuds in a small charging case.",
+        contact: ""
+    },
+    {
+        id: 106,
+        type: "found",
+        name: "White Earbud Case",
+        category: "Electronics",
+        location: "College Canteen",
+        date: "2026-10-26",
+        description: "Found a white wireless earbud charging case.",
+        contact: ""
+    }
+];
+
+const icons = {
+    "Electronics": "🎧",
+    "Bags & Wallets": "👛",
+    "Keys": "🔑",
+    "Books & Stationery": "📚",
+    "Clothing": "🧥",
+    "Accessories": "⌚",
+    "Other": "📦"
+};
+
+/* LOAD AND SAVE REPORTS */
+
+let reports = loadReports();
+
+function loadReports() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (saved !== null) {
+            const parsed = JSON.parse(saved);
+
+            if (Array.isArray(parsed)) {
+                return parsed;
+            }
+        }
+    } catch (error) {
+        console.error("Could not load reports:", error);
+    }
+
+    return sampleReports.map(item => ({...item}));
+}
+
+function saveReports() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+        return true;
+    } catch (error) {
+        alert("Your browser could not save the report.");
+        return false;
+    }
+}
+
+/* SAFE TEXT DISPLAY */
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[char]));
+}
+
+function dateText(date) {
+    if (!date) return "Date not provided";
+
+    const parsed = new Date(date + "T00:00:00");
+
+    if (Number.isNaN(parsed.getTime())) {
+        return date;
+    }
+
+    return parsed.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+/* UPDATE DASHBOARD COUNTS */
+
+function updateStats() {
+    document.getElementById("totalCount").textContent = reports.length;
+
+    document.getElementById("lostCount").textContent =
+        reports.filter(item => item.type === "lost").length;
+
+    document.getElementById("foundCount").textContent =
+        reports.filter(item => item.type === "found").length;
+}
+
+/* RECENT ACTIVITY */
+
+function renderActivity() {
+    const container = document.getElementById("activityList");
+    const recent = reports.slice(0, 4);
+
+    if (!recent.length) {
+        container.innerHTML =
+            '<div class="empty-state">No reports yet. Add your first report.</div>';
+        return;
+    }
+
+    container.innerHTML = recent.map(item => `
+        <div class="activity">
+            <div class="activity-emoji">
+                ${icons[item.category] || "📦"}
+            </div>
+
+            <div>
+                <strong>${escapeHTML(item.name)}</strong>
+
+                <small>
+                    ${item.type === "lost" ? "Reported lost" : "Reported found"}
+                    · ${escapeHTML(item.location)}
+                    <br>
+                    ${escapeHTML(dateText(item.date))}
+                </small>
+            </div>
+
+            <span class="pill ${item.type === "lost" ? "pill-lost" : "pill-found"}">
+                ${item.type === "lost" ? "LOST" : "FOUND"}
+            </span>
+        </div>
+    `).join("");
+}
+
+/* SEARCH AND FILTER ITEMS */
+
+function renderItems() {
+    const grid = document.getElementById("itemGrid");
+
+    const query = document.getElementById("searchInput")
+        .value.trim().toLowerCase();
+
+    const type = document.getElementById("typeFilter").value;
+    const category = document.getElementById("categoryFilter").value;
+
+    const filtered = reports.filter(item => {
+        const searchableText = [
+            item.name,
+            item.description,
+            item.location,
+            item.category
+        ].join(" ").toLowerCase();
+
+        const matchesSearch = searchableText.includes(query);
+        const matchesType = type === "all" || item.type === type;
+        const matchesCategory =
+            category === "all" || item.category === category;
+
+        return matchesSearch && matchesType && matchesCategory;
+    });
+
+    if (!filtered.length) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <strong>No matching reports found</strong>
+                Try another search term or change the filters.
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(item => `
+        <article class="item-card">
+
+            <div class="item-top">
+                <div class="item-emoji">
+                    ${icons[item.category] || "📦"}
+                </div>
+
+                <span class="pill ${item.type === "lost" ? "pill-lost" : "pill-found"}">
+                    ${item.type === "lost" ? "LOST" : "FOUND"}
+                </span>
+            </div>
+
+            <h3>${escapeHTML(item.name)}</h3>
+
+            <p>${escapeHTML(item.description)}</p>
+
+            <div class="item-meta">
+                <span>⌖ ${escapeHTML(item.location)}</span>
+                <span>▤ ${escapeHTML(item.category)}</span>
+                <span>◷ ${escapeHTML(dateText(item.date))}</span>
+            </div>
+
+            <button class="btn btn-secondary btn-small"
+                onclick="showItemDetails(${Number(item.id)})">
+                View details
+            </button>
+
+        </article>
+    `).join("");
+}
+
+/* ITEM DETAILS */
+
+function showItemDetails(id) {
+    const item = reports.find(report => report.id === id);
+
+    if (!item) return;
+
+    const details = [
+        "Item: " + item.name,
+        "Report: " + item.type.toUpperCase(),
+        "Category: " + item.category,
+        "Location: " + item.location,
+        "Date: " + dateText(item.date),
+        "Description: " + item.description,
+        item.contact ? "Contact: " + item.contact : "",
+        "",
+        "Verify the item carefully before arranging its return."
+    ];
+
+    alert(details.filter(Boolean).join("\n"));
+}
+
+/* SHOW AND HIDE REPORT FORM */
+
+function showForm(type) {
+    const section = document.getElementById("reportSection");
+
+    section.classList.remove("hidden");
+
+    document.getElementById("reportType").value = type;
+
+    updateFormTitle();
+
+    document.getElementById("formNotice").classList.add("hidden");
+
+    document.getElementById("reportDate").value =
+        new Date().toLocaleDateString("en-CA");
+
+    section.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+function hideForm() {
+    document.getElementById("reportSection").classList.add("hidden");
+}
+
+function updateFormTitle() {
+    const type = document.getElementById("reportType").value;
+
+    document.getElementById("formTitle").textContent =
+        type === "lost" ? "Report a lost item" : "Report a found item";
+}
+
+document.getElementById("reportType")
+    .addEventListener("change", updateFormTitle);
+
+/* SUBMIT REPORT */
+
+document.getElementById("reportForm")
+    .addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const item = {
+            id: Date.now(),
+
+            type: document.getElementById("reportType").value,
+
+            name: document.getElementById("itemName")
+                .value.trim(),
+
+            category: document.getElementById("category").value,
+
+            location: document.getElementById("location")
+                .value.trim(),
+
+            date: document.getElementById("reportDate").value,
+
+            description: document.getElementById("description")
+                .value.trim(),
+
+            contact: document.getElementById("contact")
+                .value.trim()
+        };
+
+        if (
+            !item.name ||
+            !item.category ||
+            !item.location ||
+            !item.date ||
+            !item.description
+        ) {
+            alert("Please complete all required fields.");
+            return;
+        }
+
+        reports.unshift(item);
+
+        if (!saveReports()) {
+            reports.shift();
+            return;
+        }
+
+        renderAll();
+
+        this.reset();
+
+        document.getElementById("reportDate").value =
+            new Date().toLocaleDateString("en-CA");
+
+        const notice = document.getElementById("formNotice");
+
+        notice.textContent =
+            "Your report was added successfully!";
+
+        notice.classList.remove("hidden");
+
+        document.getElementById("items").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    });
+
+/* SMART MATCH FINDER */
+
+function getWords(text) {
+    return String(text || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter(word => word.length > 2);
+}
+
+function scoreMatch(lostItem, foundItem) {
+    let score = 0;
+    const reasons = [];
+
+    if (lostItem.category === foundItem.category) {
+        score += 35;
+        reasons.push("same category");
+    }
+
+    const lostWords = new Set(
+        getWords(lostItem.name + " " + lostItem.description)
+    );
+
+    const foundWords = new Set(
+        getWords(foundItem.name + " " + foundItem.description)
+    );
+
+    const commonWords = [...lostWords].filter(
+        word => foundWords.has(word)
+    );
+
+    if (commonWords.length > 0) {
+        score += Math.min(35, commonWords.length * 12);
+        reasons.push("similar item details");
+    }
+
+    const lostLocation = getWords(lostItem.location);
+    const foundLocation = getWords(foundItem.location);
+
+    if (
+        lostLocation.join(" ") === foundLocation.join(" ")
+    ) {
+        score += 30;
+        reasons.push("same location");
+    } else if (
+        foundLocation.some(word => lostLocation.includes(word))
+    ) {
+        score += 15;
+        reasons.push("some location words match");
+    }
+
+    return {
+        score: Math.min(score, 100),
+        reasons: reasons
+    };
+}
+
+function renderMatches() {
+    const output = document.getElementById("matchResults");
+
+    const lostItems = reports.filter(item => item.type === "lost");
+    const foundItems = reports.filter(item => item.type === "found");
+
+    const matches = [];
+
+    lostItems.forEach(lostItem => {
+        foundItems.forEach(foundItem => {
+            const result = scoreMatch(lostItem, foundItem);
+
+            if (result.score >= 35) {
+                matches.push({
+                    lostItem,
+                    foundItem,
+                    score: result.score,
+                    reasons: result.reasons
+                });
+            }
+        });
+    });
+
+    matches.sort((a, b) => b.score - a.score);
+
+    if (matches.length === 0) {
+        output.innerHTML = `
+            <div class="empty-state">
+                <strong>No potential matches yet</strong>
+                Add more lost and found reports, then try again.
+            </div>
+        `;
+        return;
+    }
+
+    output.innerHTML = matches.slice(0, 4).map(match => `
+        <div class="match-card">
+
+            <strong>
+                ${escapeHTML(match.lostItem.name)}
+                ↔
+                ${escapeHTML(match.foundItem.name)}
+            </strong>
+
+            <small>
+                Lost: ${escapeHTML(match.lostItem.location)}
+                <br>
+                Found: ${escapeHTML(match.foundItem.location)}
+                <br>
+                Match reasons: ${escapeHTML(match.reasons.join(", "))}
+            </small>
+
+            <span class="score">
+                ${match.score}% potential match
+            </span>
+
+        </div>
+    `).join("");
+}
+
+document.getElementById("matchButton")
+    .addEventListener("click", function() {
+        renderMatches();
+
+        document.getElementById("matchResults")
+            .scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            });
+    });
+
+/* RENDER EVERYTHING */
+
+function renderAll() {
+    updateStats();
+    renderActivity();
+    renderItems();
+    renderMatches();
+}
+
+document.getElementById("searchInput")
+    .addEventListener("input", renderItems);
+
+document.getElementById("typeFilter")
+    .addEventListener("change", renderItems);
+
+document.getElementById("categoryFilter")
+    .addEventListener("change", renderItems);
+
+renderAll();
+
+</script>
+
+</body>
+</html>
